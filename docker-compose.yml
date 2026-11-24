@@ -1,0 +1,18 @@
+# Self-hosted n8n (free, open source). Start with:  docker compose up -d   -> http://localhost:5678
+services:
+  n8n:
+    image: docker.n8n.io/n8nio/n8n:2.48.7
+    ports:
+      - "5678:5678"
+    env_file: .env
+    environment:
+      - N8N_BLOCK_ENV_ACCESS_IN_NODE=false          # lets the workflow read LLM_* from env
+      - N8N_RESTRICT_FILE_ACCESS_TO=/data/output    # file nodes may only write here
+      - GENERIC_TIMEZONE=UTC
+    volumes:
+      - n8n_data:/home/node/.n8n
+      - ./output:/data/output                       # records appear in ./output on the host
+    extra_hosts:
+      - "host.docker.internal:host-gateway"         # reach Ollama / mock LLM on the host
+volumes:
+  n8n_data:
